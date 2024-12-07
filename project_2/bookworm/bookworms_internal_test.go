@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"reflect"
 )
 
 
@@ -52,7 +53,13 @@ func TestLoadBookworms(t *testing.T) {
 			if err == nil && tc.wantErr {
 				t.Fatalf("expected no error, got one %s", err.Error())
 			}
+			/*
 			if !equalBookworms(got, tc.want){
+				t.Fatalf("different result: got %v, expected %v", got, tc.want)
+			}
+			*/
+			// OR compare with reflect
+			if !reflect.DeepEqual(got, tc.want) {
 				t.Fatalf("different result: got %v, expected %v", got, tc.want)
 			}
 		})
