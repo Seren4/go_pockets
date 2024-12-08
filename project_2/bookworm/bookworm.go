@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
+	"fmt"
 )
 
 type Bookworm struct {
@@ -65,4 +66,10 @@ func sortBooks(books []Book) []Book {
 	})
 
 	return books
+}
+
+func displayBooks(books []Book) {
+	for _, book := range books {
+		fmt.Println("-", book.Title, "by", book.Author)
+	}
 }

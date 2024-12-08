@@ -1,14 +1,19 @@
 package main
 
 import "fmt"
+import "os"
 
 func main() {
-	bookworms, _ := loadBookworms("testdata/bookworms.json")
-	cnt := findCommonBooks(bookworms)
-	fmt.Println(cnt)
-	//if err != nil {}
-	fmt.Println(bookworms)
+	bookworms, err := loadBookworms("testdata/bookworms_bisx.json")
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "failed to load bookworms: %s", err)
+		os.Exit(1)
+	}
 
+	commonBooks := findCommonBooks(bookworms)
+
+	fmt.Println("Books in common:")
+	displayBooks(commonBooks)
 
 
 }
