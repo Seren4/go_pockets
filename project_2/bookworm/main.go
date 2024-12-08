@@ -1,10 +1,18 @@
 package main
 
-import "fmt"
-import "os"
+import (
+	"fmt"
+	"os"
+	"flag"
+)
 
 func main() {
-	bookworms, err := loadBookworms("testdata/bookworms_bisx.json")
+	var filePath string
+	flag.StringVar(&filePath, "filePath", "testdata/bookworms.json", "The bookworms filepath") 
+	flag.Parse()
+	bookworms, err := loadBookworms(filePath)
+	
+	//bookworms, err := loadBookworms("testdata/bookworms.json")
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "failed to load bookworms: %s", err)
 		os.Exit(1)
