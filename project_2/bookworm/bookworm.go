@@ -31,9 +31,17 @@ func loadBookworms(filepath string) ([]Bookworm, error) {
 }
 
 // find commons books (assuming no duplication)
-func findCommonBooks(bookworms []Bookworm) map[Book]uint{
-	count := booksCount(bookworms)
-	return count
+func findCommonBooks(bookworms []Bookworm) []Book{
+	booksOnShelves := booksCount(bookworms)
+
+	var commonBooks []Book
+	
+	for book, count := range booksOnShelves {
+		if count > 1 {
+			commonBooks = append(commonBooks, book)
+		}
+	}
+	return commonBooks
 }
 
 func booksCount(bookworms []Bookworm) map[Book]uint{

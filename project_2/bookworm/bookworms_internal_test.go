@@ -144,3 +144,49 @@ func equalBooks(books, target []Book) bool{
 			})
 		}
 	}
+
+func TestFindCommonBooks(t *testing.T) {
+	tt := map[string]struct{
+		input []Bookworm
+		want []Book
+	} {
+		"no common book": {
+			input: []Bookworm{
+				{Name: "Fadi", Books: []Book{handmaidsTale, theBellJar}},
+				{Name: "Peggy", Books: []Book{oryxAndCrake, janeEyre}},
+			},
+			want: []Book{},
+		},
+		"one common book": {
+			input: []Bookworm{
+				{Name: "Fadi", Books: []Book{handmaidsTale, theBellJar}},
+				{Name: "Peggy", Books: []Book{handmaidsTale, oryxAndCrake, janeEyre}},
+			},
+			want: []Book{handmaidsTale},
+		},
+		"one common book, one more bookwarm": {
+			input: []Bookworm{
+				{Name: "Fadi", Books: []Book{handmaidsTale, theBellJar}},
+				{Name: "Peggy", Books: []Book{handmaidsTale, oryxAndCrake, janeEyre}},
+				{Name: "Serenq", Books: []Book{handmaidsTale}},
+			},
+			want: []Book{handmaidsTale},
+		},
+		"two common books, one more bookwarm": {
+			input: []Bookworm{
+				{Name: "Fadi", Books: []Book{handmaidsTale, theBellJar}},
+				{Name: "Peggy", Books: []Book{handmaidsTale, oryxAndCrake, janeEyre}},
+				{Name: "Serena", Books: []Book{handmaidsTale, theBellJar}},
+			},
+			want: []Book{handmaidsTale, theBellJar},
+		},
+	}
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := findCommonBooks(tc.input)
+			if !equalBooks(got, tc.want) {
+				t.Fatalf("different result: got %v, expected %v", got, tc.want)
+			}
+		})
+	}
+}
