@@ -7,7 +7,7 @@ type Logger struct{
 	threshold Level
 }
 
-// New returns you a logger; ready to log at hte required threshold
+// New returns you a logger ready to log at required threshold
 func New(threshold Level) *Logger{
 	return &Logger{
 		threshold: threshold,
