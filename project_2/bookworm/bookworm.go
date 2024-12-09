@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"fmt"
+	"bufio"
 )
 
 type Bookworm struct {
@@ -23,9 +24,13 @@ func loadBookworms(filepath string) ([]Bookworm, error) {
 		return nil, err
 	}
 	defer f.Close()
-
+	
 	var bookworms []Bookworm
-	err = json.NewDecoder(f).Decode(&bookworms)
+
+	buffedReader := bufio.NewReaderSize(f, 1024*1024)
+	decoder := json.NewDecoder(buffedReader)
+	err = decoder.Decode(&bookworms)
+
 	if err != nil {
 		return nil, err
 	}
