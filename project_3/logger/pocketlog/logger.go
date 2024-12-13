@@ -43,7 +43,7 @@ func (l *Logger) Infof(format string, args ...any) {
 		return
 	}
 
-	_, _ = fmt.Printf(format+"\n", args...)
+	l.logf(format, args...)
 }
 
 // Infof formats and prints a message if the log level is warn or higher
@@ -52,7 +52,7 @@ func (l *Logger) Warnf(format string, args ...any) {
 		return
 	}
 
-	_, _ = fmt.Printf(format+"\n", args...)
+	l.logf(format, args...)
 }
 
 // Errorf formats and prints a message if the log level is error
@@ -61,5 +61,5 @@ func (l *Logger) Errorf(format string, args ...any) {
 		return
 	}
 
-	_, _ = fmt.Printf(format+"\n", args...)
+	l.logf(format, args...)
 }
