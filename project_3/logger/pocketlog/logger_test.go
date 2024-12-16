@@ -37,11 +37,11 @@ func TestLogger_DebugfInfofErrorf(t *testing.T) {
 	tt := map[string]TestCase{
 		"debug": {
 			level:    pocketlog.LevelDebug,
-			expected: "[DEBUG] " + debugMsg + "\n" + "[INFO] "+ infoMsg + "\n" + "[ERROR] " + errorMsg + "\n",
+			expected: "[DEBUG] " + debugMsg + "\n" + "[INFO] " + infoMsg + "\n" + "[ERROR] " + errorMsg + "\n",
 		},
 		"info": {
 			level:    pocketlog.LevelInfo,
-			expected: "[INFO] " + infoMsg + "\n" + "[ERROR] " +  errorMsg + "\n",
+			expected: "[INFO] " + infoMsg + "\n" + "[ERROR] " + errorMsg + "\n",
 		},
 		"error": {
 			level:    pocketlog.LevelError,
@@ -53,9 +53,17 @@ func TestLogger_DebugfInfofErrorf(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tw := &testWriter{}
 			testedLogger := pocketlog.New(tc.level, pocketlog.WithOutput(tw))
+
 			testedLogger.Debugf(debugMsg)
-			testedLogger.Infof(infoMsg)
-			testedLogger.Errorf(errorMsg)
+			// OR
+			//testedLogger.Logf(pocketlog.LevelDebug, debugMsg)
+
+			//testedLogger.Infof(infoMsg)
+			// OR
+			testedLogger.Logf(pocketlog.LevelInfo, infoMsg)
+			//testedLogger.Errorf(errorMsg)
+			// OR
+			testedLogger.Logf(pocketlog.LevelError, errorMsg)
 
 			if tw.contents != tc.expected {
 				t.Errorf("invalid contents, expected %q got %q", tc.expected, tw.contents)

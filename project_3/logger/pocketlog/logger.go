@@ -30,13 +30,21 @@ func (l *Logger) logf(lvl Level, format string, args ...any) {
 
 }
 
+// Logf formats and prints a mesh if the log level is hugh enough
+func (l *Logger) Logf(lvl Level, format string, args ...any) {
+	if l.threshold > lvl {
+		return
+	}
+	l.logf(lvl, format, args...)
+}
+
 // Debugf formats and prints a message if the log level is debug or higher
 func (l *Logger) Debugf(format string, args ...any) {
 	if l.threshold > LevelDebug {
 		return
 	}
 
-	l.logf(LevelDebug, format, args...)
+	l.Logf(LevelDebug, format, args...)
 }
 
 // Infof formats and prints a message if the log level is info or higher
@@ -45,7 +53,7 @@ func (l *Logger) Infof(format string, args ...any) {
 		return
 	}
 
-	l.logf(LevelInfo, format, args...)
+	l.Logf(LevelInfo, format, args...)
 }
 
 // Infof formats and prints a message if the log level is warn or higher
@@ -54,7 +62,7 @@ func (l *Logger) Warnf(format string, args ...any) {
 		return
 	}
 
-	l.logf(LevelWarn, format, args...)
+	l.Logf(LevelWarn, format, args...)
 }
 
 // Errorf formats and prints a message if the log level is error
@@ -63,5 +71,5 @@ func (l *Logger) Errorf(format string, args ...any) {
 		return
 	}
 
-	l.logf(LevelError, format, args...)
+	l.Logf(LevelError, format, args...)
 }
