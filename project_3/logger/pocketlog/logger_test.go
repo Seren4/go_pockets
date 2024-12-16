@@ -8,7 +8,7 @@ import (
 func ExampleLogger_Debugf() {
 	debugLogger := pocketlog.New(pocketlog.LevelDebug)
 	debugLogger.Debugf("Hello, %s!", "world")
-	// Output: Hello, world!
+	// Output: [DEBUG] Hello, world!
 }
 
 // testWriter is a struct that implements io.Writer.
@@ -37,15 +37,15 @@ func TestLogger_DebugfInfofErrorf(t *testing.T) {
 	tt := map[string]TestCase{
 		"debug": {
 			level:    pocketlog.LevelDebug,
-			expected: debugMsg + "\n" + infoMsg + "\n" + errorMsg + "\n",
+			expected: "[DEBUG] " + debugMsg + "\n" + "[INFO] "+ infoMsg + "\n" + "[ERROR] " + errorMsg + "\n",
 		},
 		"info": {
 			level:    pocketlog.LevelInfo,
-			expected: infoMsg + "\n" + errorMsg + "\n",
+			expected: "[INFO] " + infoMsg + "\n" + "[ERROR] " +  errorMsg + "\n",
 		},
 		"error": {
 			level:    pocketlog.LevelError,
-			expected: errorMsg + "\n",
+			expected: "[ERROR] " + errorMsg + "\n",
 		},
 	}
 
