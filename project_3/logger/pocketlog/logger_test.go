@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleLogger_Debugf() {
-	debugLogger := pocketlog.New(pocketlog.LevelDebug)
+	debugLogger := pocketlog.New(pocketlog.LevelDebug, 1000)
 	debugLogger.Debugf("Hello, %s!", "world")
 	// Output: [DEBUG] Hello, world!
 }
@@ -52,7 +52,7 @@ func TestLogger_DebugfInfofErrorf(t *testing.T) {
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
 			tw := &testWriter{}
-			testedLogger := pocketlog.New(tc.level, pocketlog.WithOutput(tw))
+			testedLogger := pocketlog.New(tc.level, 1000, pocketlog.WithOutput(tw))
 
 			testedLogger.Debugf(debugMsg)
 			// OR
@@ -64,6 +64,8 @@ func TestLogger_DebugfInfofErrorf(t *testing.T) {
 			//testedLogger.Errorf(errorMsg)
 			// OR
 			testedLogger.Logf(pocketlog.LevelError, errorMsg)
+
+			// TODO test loggerLength
 
 			if tw.contents != tc.expected {
 				t.Errorf("invalid contents, expected %q got %q", tc.expected, tw.contents)

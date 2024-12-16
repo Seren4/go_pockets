@@ -10,12 +10,13 @@ import (
 type Logger struct {
 	threshold Level
 	output    io.Writer
+	loggerLength int
 }
 
-// New returns you a logger ready to log at required threshold.
+// New returns you a logger ready to log at required threshold and required message length.
 // The default output is Stdout.
-func New(threshold Level, opts ...Option) *Logger {
-	lgr := &Logger{threshold: threshold, output: os.Stdout}
+func New(threshold Level, loggerLength int, opts ...Option) *Logger {
+	lgr := &Logger{threshold: threshold, output: os.Stdout, loggerLength: loggerLength}
 
 	for _, configFunc := range opts {
 		configFunc(lgr)
@@ -26,6 +27,10 @@ func New(threshold Level, opts ...Option) *Logger {
 // logf prints the message to the output.
 func (l *Logger) logf(lvl Level, format string, args ...any) {
 	message := fmt.Sprintf(format, args...)
+	if l.loggerLength < len(message) {
+        message = message[:l.loggerLength]
+    }
+
 	_, _ = fmt.Fprintf(l.output, "%s %s\n", lvl, message)
 
 }
