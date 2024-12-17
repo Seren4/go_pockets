@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 // Game holds all the information we need to play a game of Gordle.
@@ -31,7 +32,7 @@ func (g *Game) ask() []rune {
 			_, _ = fmt.Fprintf(os.Stderr, "Gordle failed to read your guess %s\n", err.Error())
 			continue
 		}
-		guess := []rune(string(playerInput))
+		guess := splitToUpperCaseChars(string(playerInput))
 
 		err = g.validateGuess(guess)
 		if err != nil {
@@ -54,6 +55,10 @@ func (g *Game) validateGuess(guess []rune) error {
 	return nil
 }
 
+// splitToUpperCaseChars turns a string into a list of characters
+func splitToUpperCaseChars(input string) []rune {
+	return []rune(strings.ToUpper(input))
+}
 
 // Play runs the game.
 // ( creating a method on an object is achieved by writing a pointer receiver on the Game stucture)
