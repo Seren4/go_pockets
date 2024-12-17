@@ -33,14 +33,27 @@ func (g *Game) ask() []rune {
 		}
 		guess := []rune(string(playerInput))
 
-		if len(guess) != solutionLength {
-			_, _ = fmt.Fprintf(os.Stderr, "Invali attempt: expected %d characters, got %d\n", solutionLength, len(guess))
-
+		err = g.validateGuess(guess)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Your attempt is invalid: %s.\n", err.Error())
 		} else {
 			return guess
 		}
 	}
 }
+
+// errInvalidWordlLength
+var errInvalidWordlLength = fmt.Errorf("invalid guess, word doesn't have the same nb of chars as the solution")
+
+// validateGuess ensures the guess is valid enough.
+func (g *Game) validateGuess(guess []rune) error {
+	if len(guess) != solutionLength {
+		return fmt.Errorf("expected %d characters, got %d, %w", solutionLength, len(guess), errInvalidWordlLength)
+
+	} 
+	return nil
+}
+
 
 // Play runs the game.
 // ( creating a method on an object is achieved by writing a pointer receiver on the Game stucture)

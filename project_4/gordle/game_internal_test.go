@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"errors"
 )
 
 func TestGameAsk(t *testing.T) {
@@ -34,6 +35,43 @@ func TestGameAsk(t *testing.T) {
 			got := g.ask()
 			if !slices.Equal(got, tc.want) {
 				t.Errorf("got = %v, want = %v", string(got), string(tc.want))
+			}
+		})
+	}
+}
+
+func TestGameValidateGuest(t *testing.T) {
+	tt := map[string]struct {
+		word  []rune
+		expected error
+	}{
+		"nominal": {
+			word:  []rune("HELLO"),
+			expected: nil,
+		},
+		"too long": {
+			word:  []rune("BONJOUR"),
+			expected: errInvalidWordlLength,
+		},
+		"too short": {
+			word:  []rune("CIAO"),
+			expected: errInvalidWordlLength,
+		},
+		"empty": {
+			word:  []rune(""),
+			expected: errInvalidWordlLength,
+		},
+		"nil": {
+			word:  []rune(nil),
+			expected: errInvalidWordlLength,
+		},
+	}
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			g := New(nil)
+			err := g.validateGuess(tc.word)
+			if !errors.Is(err, tc.expected){
+				t.Errorf("%c got %q, expected %q", tc.word, tc.expected, err)
 			}
 		})
 	}
