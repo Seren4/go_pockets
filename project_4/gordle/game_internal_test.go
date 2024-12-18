@@ -76,3 +76,35 @@ func TestGameValidateGuest(t *testing.T) {
 		})
 	}
 }
+
+func TestGameSplitToUpperCaseChars(t *testing.T) {
+	tt := map[string]struct {
+		word  string
+		expected []rune
+		} {
+		"nominal": {
+			word:  "hello",
+			expected: []rune("HELLO"),
+		},
+		"upper and loxer": {
+			word:  "helLO",
+			expected: []rune("HELLO"),
+		},
+		"empty": {
+			word:  "",
+			expected: []rune(""),
+		},
+		"upper": {
+			word:  "HELLO",
+			expected: []rune("HELLO"),
+		},
+	}
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := splitToUpperCaseChars(string(tc.word))
+			if !slices.Equal(got, tc.expected) {
+				t.Errorf("got %v, expected %v", got, tc.expected)
+			}
+		})
+	}
+}
