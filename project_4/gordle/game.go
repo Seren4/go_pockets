@@ -52,7 +52,7 @@ var errInvalidWordlLength = fmt.Errorf("invalid guess, word doesn't have the sam
 // validateGuess ensures the guess is valid enough.
 func (g *Game) validateGuess(guess []rune) error {
 	if len(guess) != len(g.solution) {
-		return fmt.Errorf("expected %d characters, got %d, %w", g.solution, len(guess), errInvalidWordlLength)
+		return fmt.Errorf("expected %d characters, got %d, %w", len(g.solution), len(guess), errInvalidWordlLength)
 
 	} 
 	return nil
