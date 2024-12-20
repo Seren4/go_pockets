@@ -108,3 +108,56 @@ func TestGameSplitToUpperCaseChars(t *testing.T) {
 		})
 	}
 }
+
+
+func TestGamecomputeFeedback(t *testing.T) {
+	tt := map[string]struct {
+		guess  string
+		solution  string
+		expectedFeedback feedback
+		} {
+		"nominal": {
+			guess:  "hello",
+			solution:  "hello",
+			expectedFeedback: feedback{correctPosition,correctPosition,correctPosition,correctPosition,correctPosition},
+		},
+		"one char": {
+			guess:  "qwrtl",
+			solution:  "hello",
+			expectedFeedback: feedback{absentChar,absentChar,absentChar,absentChar,wrongPosition},
+		},
+		"different length": {
+			guess:  "hello",
+			solution:  "bonjour",
+			expectedFeedback: feedback{absentChar,absentChar,absentChar,absentChar,absentChar,absentChar,absentChar},
+		},
+		"double character with wrong answer": {
+			guess:            "helll",
+			solution:         "hello",
+			expectedFeedback: feedback{correctPosition, correctPosition, correctPosition, correctPosition, absentChar},
+		},
+		"five identical, two ok": {
+			guess:            "lllll",
+			solution:         "hello",
+			expectedFeedback: feedback{absentChar, absentChar, correctPosition, correctPosition, absentChar},
+		},
+		"two identical, different position": {
+			guess:            "hlleo",
+			solution:         "hello",
+			expectedFeedback: feedback{correctPosition, wrongPosition, correctPosition, wrongPosition, correctPosition},
+		},
+	}
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := computeFeedback([]rune(tc.guess), []rune(tc.solution))
+			// if !slices.Equal(got, tc.expectedFeedback) {
+			// 	t.Errorf("got %v, expected %v", got, tc.expectedFeedback)
+			// }
+			// OR with Equal
+			if !got.Equal(tc.expectedFeedback) {
+				t.Errorf("got %v, expected %v", got, tc.expectedFeedback)
+
+			}
+		})
+	}
+}

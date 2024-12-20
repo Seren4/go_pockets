@@ -35,3 +35,16 @@ func (fb feedback) String() string {
 	}
 	return sb.String()
 }
+
+// Equal determines equality of two feedbacks
+func (fb feedback) Equal (other feedback) bool {
+	if len(fb) != len(other) {
+		return false
+	}
+	for i, v := range(fb) {
+		if v != other[i] {
+			return false
+		}
+	}
+	return true
+}
