@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+const ErrCorpusIsEmpty = corpusError("corpus is empty")
+
 func ReadCorpus(path string) ([]string, error) {
 
 	corpuslist, err := os.ReadFile(path)
@@ -14,7 +16,7 @@ func ReadCorpus(path string) ([]string, error) {
 	}
 
 	if len(corpuslist) == 0 {
-		return nil, fmt.Errorf("Error, corpus %q is empty", path)
+		return nil, ErrCorpusIsEmpty
 	}
 	words := strings.Fields(string(corpuslist))
 	return words, nil
