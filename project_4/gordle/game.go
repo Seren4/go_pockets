@@ -17,13 +17,16 @@ type Game struct {
 }
 
 // New returns a Game variable, which can be used to play.
-func New(playerInput io.Reader, solution string, maxAttempts int) *Game {
+func New(playerInput io.Reader, corpus []string, maxAttempts int) (*Game, error) {
+	if len(corpus) == 0 {
+		return nil, ErrCorpusIsEmpty
+	}
 	g := &Game{
 		reader:      bufio.NewReader(playerInput),
-		solution:    splitToUpperCaseChars(solution),
+		solution:    splitToUpperCaseChars(PickWord(corpus)),
 		maxAttempts: maxAttempts,
 	}
-	return g
+	return g, nil
 }
 
 // ask reads input until a valid suggestion is made (and returned).
