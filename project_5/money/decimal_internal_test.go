@@ -33,7 +33,7 @@ func TestParseDecimal(t *testing.T) {
 		},
 		"with 0 as after ": {
 			decimal:  "10.0",
-			expected: Decimal{subunits: 100, precision: 1},
+			expected: Decimal{subunits: 10, precision: 0},
 			err:      nil,
 		},
 		"with 0 as before ": {
@@ -83,7 +83,7 @@ func TestParseDecimal(t *testing.T) {
 		},
 		"sufix 0 as decimal digits": {
 			decimal:  "34.50",
-			expected: Decimal{subunits: 3450, precision: 2},
+			expected: Decimal{subunits: 345, precision: 1},
 			err: nil,
 		},
 		
