@@ -89,9 +89,9 @@ func (g *Game) Play() {
 // computeFeedback verifies every character of the guess against the solution 
 func computeFeedback(guess, solution []rune) feedback {
 	// initialize holders for marks
-	var fb feedback = make(feedback, len(solution))
+	fb := make(feedback, len(solution))
 	// checked keeps trace of the already checked character in the solution
-	var checked = make([]bool, len(solution))
+	checked := make([]bool, len(solution))
 
 	// repeate the length check just in case
 	if len(guess) != len(solution) {
@@ -109,21 +109,24 @@ func computeFeedback(guess, solution []rune) feedback {
 	
 	// loop n. 2: check for chars in wrong position, only if the not already checked
 	for index, letter := range guess {
-		if fb[index] == absentChar {
-			for indexSol, letterSol := range solution {
-				// already checked, go on
-				if checked[indexSol] {
-					continue
-				}
-				if letterSol == letter {
-					fb[index] = wrongPosition
-					checked[indexSol] = true
-					// Skip to the next letter
-					break
+		if fb[index] != absentChar {
+			// the char has already been marked.
+			continue
+		}
+
+		for indexSol, letterSol := range solution {
+			// already checked, go on
+			if checked[indexSol] {
+				continue
+			}
+			if letterSol == letter {
+				fb[index] = wrongPosition
+				checked[indexSol] = true
+				// Skip to the next letter
+				break
 				}
 			}
 
 		}
-	}
 	return fb
 }
