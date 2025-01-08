@@ -11,6 +11,10 @@ type ExchangeRate Decimal
 func Convert(amountToConvert Amount, to Currency) (Amount, error) {
 	rate := ExchangeRate{subunits: 2, precision: 0}
 	converted := applyExchangeRate(amountToConvert, to, rate)
+	// Validate the converted amount is in the handled bounded range.
+	if err := converted.validate(); err != nil {
+		return Amount{}, err
+	}
 	return converted, nil
 }
 

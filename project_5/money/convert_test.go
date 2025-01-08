@@ -54,6 +54,15 @@ func TestConvert(t *testing.T) {
 				}
 			},
 		},
+		"error on finale validatio": {
+			amount: mustParseAmount(t, "500000000001", "USD"),
+			to: mustParseCurrency(t, "EUR"),
+			validate: func(t *testing.T, got money.Amount, err error) {
+				if err != money.ErrTooLarge {
+					t.Errorf("expected error %s, got %s", money.ErrTooLarge, err.Error())
+				}
+			},
+		},
 	}
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
