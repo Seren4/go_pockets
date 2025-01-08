@@ -9,13 +9,16 @@ type ExchangeRate Decimal
 
 // Convert applies the change rate to convert an amount to a target currency.
 func Convert(amountToConvert Amount, to Currency) (Amount, error) {
-	return Amount{}, nil
+	rate := ExchangeRate{subunits: 2, precision: 0}
+	converted := applyExchangeRate(amountToConvert, to, rate)
+	return converted, nil
 }
 
 // applyExchangeRate returns a new Amount representing the input multiplied by the rate.
 // The precision of the returned value is that of the target Currency.
 // This function does not guarantee that the output amount is supported.
 func applyExchangeRate(a Amount, target Currency, rate ExchangeRate) Amount {
+
 	converted := multiply(a.quantity, rate)
 
 	switch {
