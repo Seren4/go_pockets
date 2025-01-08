@@ -11,19 +11,19 @@ type ExchangeRate Decimal
 func Convert(amountToConvert Amount, to Currency) (Amount, error) {
 	return Amount{}, nil
 }
+
 // applyExchangeRate returns a new Amount representing the input multiplied by the rate.
 // The precision of the returned value is that of the target Currency.
 // This function does not guarantee that the output amount is supported.
 func applyExchangeRate(a Amount, target Currency, rate ExchangeRate) Amount {
-	// Amount{quantity: quantity, currency: currency}
-	// converted, err := multiply(a.quantity, rate)
-	converted := Decimal{subunits: a.quantity.subunits*rate.subunits, precision: a.quantity.precision+rate.precision }
-	converted.simplify()
-	if converted.precision > target.precision {
+	converted := multiply(a.quantity, rate)
+
+	switch {
+	case converted.precision > target.precision:
 		converted.subunits = converted.subunits / pow10(converted.precision-target.precision)
-	}
-	if converted.precision < target.precision {
+	case converted.precision < target.precision:
 		converted.subunits = converted.subunits * pow10(target.precision-converted.precision)
+
 	}
 	converted.precision = target.precision
 
@@ -31,8 +31,12 @@ func applyExchangeRate(a Amount, target Currency, rate ExchangeRate) Amount {
 
 }
 
-
-// func adjustResultToCurrency() {}
+// multiply a Decimal with an ExchangeRate and returns the product (once simplified)
+func multiply(amount Decimal, rate ExchangeRate) Decimal {
+	converted := Decimal{subunits: amount.subunits * rate.subunits, precision: amount.precision + rate.precision}
+	converted.simplify()
+	return converted
+}
 
 // pow10 is a quick implementation of how to raise 10 to a given power.
 // It's optimised for small powers, and slow for unusually high powers.
