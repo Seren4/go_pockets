@@ -10,15 +10,19 @@ type Amount struct {
 const ErrDecimalTooPrecise = Error("quantity is too precise")
 
 func NewAmount(quantity Decimal, currency Currency) (Amount, error) {
-	if quantity.precision > currency.precision {
+	switch {
+	case quantity.precision > currency.precision:
 		return Amount{}, ErrDecimalTooPrecise
+	case quantity.precision < currency.precision:
+		quantity.subunits *= pow10(currency.precision - quantity.precision)
+		quantity.precision = currency.precision
 	}
 	quantity.precision = currency.precision
 	return Amount{quantity: quantity, currency: currency}, nil
 }
 
 // validate returns an error if and only if an Amount is unsafe to use.
-func (a Amount) validate() error{
+func (a Amount) validate() error {
 	switch {
 	case a.quantity.subunits > maxDecimal:
 		return ErrTooLarge
@@ -30,4 +34,4 @@ func (a Amount) validate() error{
 
 func (a Amount) String() string {
 	return a.quantity.String() + " " + a.currency.code
-	}
+}
