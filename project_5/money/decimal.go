@@ -18,7 +18,7 @@ type Decimal struct {
 
 const (
 	ErrInvalidDecimal = Error("unable to convert the decimal")
-	ErrTooLarge = Error("value over 10^12 is too big")
+	ErrTooLarge       = Error("value over 10^12 is too big")
 )
 
 // maxDecimal value is a thousand billion, using the short scale -- 10^12.
@@ -26,7 +26,7 @@ const maxDecimal = 1e12
 
 // ParseDecimal converts a string into its Decimal representation.
 // It assumes there is up to one decimal separator, and that the separator is '.' (full stop character).
-func ParseDecimal(input string) (Decimal, error){
+func ParseDecimal(input string) (Decimal, error) {
 	var result Decimal
 
 	before, after, _ := strings.Cut(input, ".")
@@ -47,12 +47,26 @@ func ParseDecimal(input string) (Decimal, error){
 	return result, nil
 }
 
-
 func (d *Decimal) simplify() {
 	// Using %10 returns the last digit in base 10 of a number.
 	// If the precision is positive, that digit belongs to the right side of the decimal separator.
 	for d.subunits%10 == 0 && d.precision > 0 {
-		d.precision --
+		d.precision--
 		d.subunits /= 10
 	}
 }
+
+// String implements stringer and returns the Decimal formatted as
+// digits and optionally a decimal point followed by digits.
+func (d *Decimal) String() string {
+	// Quick-win, no need to do maths.
+	if d.precision == 0 {
+		return fmt.Sprintf("%d", d.subunits)
+	}
+	centsPerUnit := pow10(d.precision)
+	frac := d.subunits % centsPerUnit
+	integer := d.subunits / centsPerUnit
+	decimalFormat := "%d.%0" + strconv.Itoa(int(d.precision)) + "d"
+	return fmt.Sprintf(decimalFormat, integer, frac)
+}
+// todo test it

@@ -101,3 +101,45 @@ func TestParseDecimal(t *testing.T) {
 		})
 	}
 }
+
+
+func TestStringDecimal(t *testing.T) {
+	tt := map[string]struct {
+		expected  string
+		decimal Decimal
+	}{
+		"precision 0": {
+			decimal:  Decimal{precision: 0, subunits: 555},
+			expected: "555",
+		},
+		"precision 1": {
+			decimal:  Decimal{precision: 1, subunits: 55},
+			expected: "5.5",
+		},
+		"precision 2": {
+			decimal:  Decimal{precision: 2, subunits: 555},
+			expected: "5.55",
+		},
+		"precision 3": {
+			decimal:  Decimal{precision: 3, subunits: 505000},
+			expected: "505.000",
+		},
+		"precision 4": {
+			decimal:  Decimal{precision: 4, subunits: 55505},
+			expected: "5.5505",
+		},
+		"precision 4 bis": {
+			decimal:  Decimal{precision: 4, subunits: 505},
+			expected: "0.0505",
+		},
+	}
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := tc.decimal.String()
+			if got != tc.expected {
+				t.Errorf("expected %v, got %v", tc.expected, got)
+			}
+		
+		})
+	}
+}
