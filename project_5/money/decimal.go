@@ -69,4 +69,3 @@ func (d *Decimal) String() string {
 	decimalFormat := "%d.%0" + strconv.Itoa(int(d.precision)) + "d"
 	return fmt.Sprintf(decimalFormat, integer, frac)
 }
-// todo test it
