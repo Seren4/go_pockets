@@ -13,5 +13,6 @@ const (
 	ErrClientSide = ecbankError("error on client side")
 	ErrServerSide = ecbankError("error on server side")
 	ErrUnknownStatusCode = ecbankError("error unknown")
-
+	ErrUnexpectedFormat   = ecbankError("unexpected response format")
+	ErrChangeRateNotFound = ecbankError("couldn't find the exchange rate")
 )
