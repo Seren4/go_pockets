@@ -2,15 +2,24 @@ package money
 
 import (
 	"math"
+	"fmt"
 )
 
 // ExchangeRate represents a rate to convert from a currency to another.
 type ExchangeRate Decimal
 
+type exchangeRates interface {
+	FetchExchangeRate(source, target Currency) (ExchangeRate, error)
+}
+
 // Convert applies the change rate to convert an amount to a target currency.
-func Convert(amountToConvert Amount, to Currency) (Amount, error) {
-	rate := ExchangeRate{subunits: 2, precision: 0}
-	converted := applyExchangeRate(amountToConvert, to, rate)
+func Convert(amount Amount, to Currency, rates exchangeRates) (Amount, error) {
+	// fetch the change rate for the day
+	rate, err := rates.FetchExchangeRate(amount.currency, to)        
+	if err != nil {
+		return Amount{}, fmt.Errorf("cannot get change rate: %w", err)
+	}
+	converted := applyExchangeRate(amount, to, rate)
 	// Validate the converted amount is in the handled bounded range.
 	if err := converted.validate(); err != nil {
 		return Amount{}, err

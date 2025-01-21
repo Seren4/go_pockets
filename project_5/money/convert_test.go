@@ -4,6 +4,7 @@ import (
 	"learngo-pockets/moneyconverter/money"
 	"reflect"
 	"testing"
+	"errors"
 )
 
 func mustParseCurrency(t *testing.T, code string) money.Currency {
@@ -35,15 +36,37 @@ func mustParseAmount(t *testing.T, value string, code string) money.Amount {
 	return amount
 }
 
+func mustParseExchangeRate(t *testing.T, input string) money.ExchangeRate {
+	t.Helper()
+	rate, err := money.ParseDecimal(input)
+	if err != nil {
+		t.Fatalf("unable to parse exchange rate %s", input)
+	}
+	return money.ExchangeRate(rate)
+}
+
+// stubRate is a very simple stub for the exchangeRates.
+type stubRate struct {
+	rate money.ExchangeRate
+	err error 
+}
+
+// FetchExchangeRate implements the interface exchangeRates with the same signature but fields are unused for tests purposes.
+func (m stubRate) FetchExchangeRate(_, _ money.Currency) (money.ExchangeRate, error) {
+    return m.rate, m.err
+}
+
 func TestConvert(t *testing.T) {
 	tt := map[string]struct {
 		amount money.Amount
 		to money.Currency
+		stub stubRate
 		validate func(t *testing.T, got money.Amount, err error)
 	}{
 		"34.98 USD to EUR": {
 			amount: mustParseAmount(t, "34.98", "USD"),
 			to: mustParseCurrency(t, "EUR"),
+			stub: stubRate{rate: mustParseExchangeRate(t, "2.00"), err: nil},
 			validate: func(t *testing.T, got money.Amount, err error) {
 				if err != nil {
 					t.Errorf("expected no error, got %s", err.Error())
@@ -57,8 +80,9 @@ func TestConvert(t *testing.T) {
 		"error on finale validatio": {
 			amount: mustParseAmount(t, "500000000001", "USD"),
 			to: mustParseCurrency(t, "EUR"),
+			stub: stubRate{rate: money.ExchangeRate{}, err: money.ErrTooLarge},
 			validate: func(t *testing.T, got money.Amount, err error) {
-				if err != money.ErrTooLarge {
+				if !errors.Is(err, money.ErrTooLarge){
 					t.Errorf("expected error %s, got %s", money.ErrTooLarge, err.Error())
 				}
 			},
@@ -66,7 +90,7 @@ func TestConvert(t *testing.T) {
 	}
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			got, err := money.Convert(tc.amount, tc.to)
+			got, err := money.Convert(tc.amount, tc.to, tc.stub)
 			tc.validate(t, got, err)
 		})
 			}
