@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"learngo-pockets/moneyconverter/money"
 	"errors"
+	"time"
+	"net/url"
 )
 
 func TestEuroCentralBank_FetchExchangeRate_Success(t *testing.T) {
@@ -19,9 +21,17 @@ func TestEuroCentralBank_FetchExchangeRate_Success(t *testing.T) {
 		</Cube></Cube></gesmes:Envelope>`)
 	}))
 	defer ts.Close() 
+	proxyURL, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse proxy URL: %v", err)
+	}
 
 	ecb := Client{
-		url: ts.URL,
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			},
+			Timeout: time.Second},
 	}
 	got, err := ecb.FetchExchangeRate(mustParseCurrency(t, "USD"), mustParseCurrency(t,"RON")) 
 	want := mustParseDecimal(t, "3")
@@ -38,10 +48,18 @@ func TestEuroCentralBank_FetchExchangeRate_Error500(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
-	defer ts.Close() 
+	defer ts.Close()
+	proxyURL, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse proxy URL: %v", err)
+	}
 
 	ecb := Client{
-		url: ts.URL,
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			},
+			Timeout: time.Second},
 	}
 	got, err := ecb.FetchExchangeRate(mustParseCurrency(t, "USD"), mustParseCurrency(t,"RON")) 
 	want := mustParseDecimal(t, "0")
@@ -66,9 +84,17 @@ func TestEuroCentralBank_FetchExchangeRate_ErrorXML(t *testing.T) {
 		</Cube></Cube></gesmes:Envelope>`)
 	}))
 	defer ts.Close() 
+	proxyURL, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse proxy URL: %v", err)
+	}
 
 	ecb := Client{
-		url: ts.URL,
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			},
+			Timeout: time.Second},
 	}
 	got, err := ecb.FetchExchangeRate(mustParseCurrency(t, "USD"), mustParseCurrency(t,"RON")) 
 	want := mustParseDecimal(t, "0")
@@ -93,13 +119,53 @@ func TestEuroCentralBank_FetchExchangeRate_CurrencyNotFound(t *testing.T) {
 	}))
 	defer ts.Close() 
 
+	proxyURL, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse proxy URL: %v", err)
+	}
+
 	ecb := Client{
-		url: ts.URL,
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			},
+			Timeout: time.Second},
 	}
 	got, err := ecb.FetchExchangeRate(mustParseCurrency(t, "USA"), mustParseCurrency(t,"ROI")) 
 	want := mustParseDecimal(t, "0")
 
 	if !errors.Is(err, ErrChangeRateNotFound){
+		t.Errorf("unexpected error: %v, want: %v", err, ErrServerSide)
+	}
+	
+	if want != money.Decimal(got) {
+		t.Errorf("FetchExchangeRate got = %v, want %v", money.Decimal(got), want)
+	}
+}
+
+func TestEuroCentralBank_FetchExchangeRate_ServerTimeOut(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(time.Second * 2)  
+	}))
+	defer ts.Close() 
+
+	proxyURL, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse proxy URL: %v", err)
+	}
+
+	ecb := Client{
+		client: &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyURL(proxyURL),
+			},
+			Timeout: time.Second,
+		},
+	}
+	got, err := ecb.FetchExchangeRate(mustParseCurrency(t, "USA"), mustParseCurrency(t,"ROI")) 
+	want := mustParseDecimal(t, "0")
+
+	if !errors.Is(err, ErrServerTimeOut){
 		t.Errorf("unexpected error: %v, want: %v", err, ErrServerSide)
 	}
 	

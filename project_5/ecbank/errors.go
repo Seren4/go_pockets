@@ -15,4 +15,6 @@ const (
 	ErrUnknownStatusCode = ecbankError("error unknown")
 	ErrUnexpectedFormat   = ecbankError("unexpected response format")
 	ErrChangeRateNotFound = ecbankError("couldn't find the exchange rate")
+	ErrServerTimeOut = ecbankError("error calling server: timeout")
+
 )

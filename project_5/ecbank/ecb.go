@@ -4,25 +4,37 @@ import (
 	"learngo-pockets/moneyconverter/money"
 	"net/http"
 	"fmt"
+	"time"
+	"errors"
+	"net/url"
 )
 
 // Client can call the bank to retrieve exchange rates.
 type Client struct {
-	url string
+	client *http.Client 
+	transport *http.Transport 
 }
+
+// NewBank builds a Client that can fetch exchange rates within a given timeout.
+func NewClient(timeout time.Duration) Client {
+	return Client{
+		client: &http.Client{Timeout: timeout},
+		}
+	}
 
 // FetchExchangeRate fetches the ExchangeRate for the day and returns it.
 func (c Client) FetchExchangeRate(source, target money.Currency) (money.ExchangeRate, error) {
 
-	const path = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+	const path = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 
-	if c.url == "" {
-		c.url = path
-		}
-
-	resp, err := http.Get(c.url)
+	resp, err := c.client.Get(path)
 
 	if err != nil {
+		var urlErr *url.Error  
+    if ok := errors.As(err, &urlErr); ok && urlErr.Timeout() {
+			// This is a timeout!
+			return money.ExchangeRate{}, fmt.Errorf("%w: %s", ErrServerTimeOut, err)
+		}
 		return money.ExchangeRate{}, fmt.Errorf("%w: %s", ErrCallingServer, err)
 	}
 	// close the response's body
