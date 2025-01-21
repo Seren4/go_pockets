@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"learngo-pockets/moneyconverter/money"
+	"learngo-pockets/moneyconverter/ecbank"
 	"os"
 )
 
@@ -22,6 +23,7 @@ func main() {
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "unable to parse source currency %q: %s.\n", *from, err)
 	}
+
 	toCurrency, err := money.ParseCurrency(*to)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "unable to parse target currency %q: %s.\n", *to, err)
@@ -37,13 +39,14 @@ func main() {
 		_, _ = fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	result, err := money.Convert(amount, toCurrency)
+
+	rates := ecbank.Client{}
+	result, err := money.Convert(amount, toCurrency, rates)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	fmt.Println("Amount:", amount, "; To Currency:", toCurrency)
-	fmt.Println(result)
+	fmt.Println(amount, "=", result)
 
 
 
