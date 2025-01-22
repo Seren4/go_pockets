@@ -24,3 +24,8 @@ func (c *Cache[K, V]) Upsert(key K, value V) error {
   // but it can happen in the near future.
   return nil
 }
+
+// Delete removes the entry for the given key.
+func (c *Cache[K, V]) Delete(key K) {
+	delete(c.data, key)
+}
