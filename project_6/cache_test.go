@@ -3,12 +3,9 @@ package cache_test
 import (
 	"testing"
 	cache "learngo-pockets/genericcache"
-  "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
+	"reflect"
 )
-
-// You can start writing a unit test that writes, reads, 
-// checks the returned type, checks the returned value for an absent key,
-// writes another value for the same key, etc.
 
 func TestCache(t *testing.T) {
 	c := cache.New[string, string]()
@@ -17,5 +14,15 @@ func TestCache(t *testing.T) {
 	value, found := c.Read("serena")
 	assert.True(t, found)
 	assert.Equal(t, "06778899", value)
+	assert.Equal(t, reflect.TypeOf(value).String(), "string")
+
+	value2, found2 := c.Read("alice")
+	assert.False(t, found2)
+	assert.Equal(t, "", value2)
+
+	c.Upsert("serena", "06778800")
+	value3, found3 := c.Read("serena")
+	assert.True(t, found3)
+	assert.Equal(t, "06778800", value3)
 
 }
