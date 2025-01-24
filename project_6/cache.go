@@ -54,7 +54,17 @@ func (c *Cache[K, V]) Read(key K) (V, bool) {
 func (c *Cache[K, V]) Upsert(key K, value V) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	_, found := c.data[key]
+
+	switch {
+	case found:
+		c.deleteKeyValue(key)
+	case len(c.data) == c.maxSize:
+		c.deleteKeyValue(c.chronologicalKeys[0])
+	}
 	c.addKeyValue(key, value)
+
 	// Do not return an error for the moment,
 	// but it can happen in the near future.
 	return nil
