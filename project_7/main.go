@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -10,8 +11,7 @@ func main() {
 	// func ListenAndServe(addr string, handler Handler) error
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		// It’s OK to panic in the body of main.
-		panic(err)                                                   
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)                                             
 	}
-	fmt.Println(err)
 }
