@@ -10,6 +10,8 @@ const (
 		
 		// GetStatusRoute is the path to get the status of a game identified by its id.
 		GetStatusRoute = "/games/{" + GameID + "}"
+
+		GuessRoute = "/games/{" + GameID + "}"
 )
 
 // GameResponse contains the information about a game.

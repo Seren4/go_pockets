@@ -5,6 +5,8 @@ import (
 	"learngo/httpgordle/internal/api"
 	"learngo/httpgordle/internal/handlers/newgame"
 	"learngo/httpgordle/internal/handlers/getstatus"
+	"learngo/httpgordle/internal/handlers/guess"
+
 )
 
 // Mux creates a multiplexer with all the endpoints for our service.
@@ -17,7 +19,9 @@ func Mux() *http.ServeMux {
 	//  Connecting a URL to a handler
 	// mux.HandleFunc(api.NewGameRoute, newgame.Handle)    // previous version  
 	mux.HandleFunc(http.MethodPost+" "+api.NewGameRoute, newgame.Handle)  
-	mux.HandleFunc(http.MethodGet+" "+api.GetStatusRoute, getstatus.Handle)    
+	mux.HandleFunc(http.MethodGet+" "+api.GetStatusRoute, getstatus.Handle)  
+	mux.HandleFunc(http.MethodPut+" "+api.GuessRoute, guess.Handle)    
+  
 	return mux
 }
 
