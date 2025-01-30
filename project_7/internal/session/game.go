@@ -30,3 +30,7 @@ type Guess struct {
 
 // ErrGameOver is returned when a play is made but the game is over.
 var ErrGameOver = errors.New("game over")
+
+var ErrNotFound = errors.New("game not found")
+
+
