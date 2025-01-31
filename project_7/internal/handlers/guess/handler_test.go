@@ -26,7 +26,7 @@ func TestHandleGet(t *testing.T) {
 	// Create a response recorder
 	recorder := httptest.NewRecorder()
 
-	handleFunc := guess.Handle(gameUpdaterStub{})
+	handleFunc := guess.Handle(gameGuesserStub{})
 	// Call the function
 
 	handleFunc(recorder, req)
@@ -37,10 +37,15 @@ func TestHandleGet(t *testing.T) {
 }
 
 // Stubbing the repo
-type gameUpdaterStub struct {
-	err error
+type gameGuesserStub struct {
+	game session.Game
+	err  error
 }
 
-func (g gameUpdaterStub) Update(_ session.Game) error {
+func (g gameGuesserStub) Update(_ session.Game) error {
 	return g.err
+}
+
+func (g gameGuesserStub) Find(_ session.GameID) (session.Game, error) {
+	return g.game, g.err
 }

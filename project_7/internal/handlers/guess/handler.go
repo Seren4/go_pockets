@@ -13,12 +13,14 @@ import (
 // the function in charge of dealing with the request and writing the response.
 
 // func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request))
-type gameUpdater interface {
+
+
+type gameGuesser interface {
+	Find(session.GameID) (session.Game, error)
 	Update(game session.Game) error
 }
 
-
-func Handle(db gameUpdater) http.HandlerFunc {
+func Handle(db gameGuesser) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
 		id := req.PathValue(api.GameID)
