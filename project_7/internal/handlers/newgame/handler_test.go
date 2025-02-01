@@ -1,8 +1,8 @@
-package newgame_test
+package newgame
 
 import (
-	"learngo/httpgordle/internal/handlers/newgame"
 	"learngo/httpgordle/internal/session"
+
 
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +16,7 @@ import (
 
 func TestHandle(t *testing.T) {
 	// Create anonymous function
-	handleFunc := newgame.Handle(gameAdderStub{})
+	handleFunc := Handle(gameAdderStub{})
 	// Create a request.
 	req, err := http.NewRequest(http.MethodPost, "/games", nil)
 	require.NoError(t, err)
@@ -43,7 +43,23 @@ func TestHandle(t *testing.T) {
 type gameAdderStub struct {
 	err error
 }
-
+type gameCreatorStub struct {
+	err error
+}
 func (g gameAdderStub) Add(_ session.Game) error {
 	return g.err
+}
+func (g gameCreatorStub) Add(_ session.Game) error {
+	return g.err
+}
+
+
+func Test_createGame(t *testing.T) {
+	g, err := createGame(gameCreatorStub{nil})
+	require.NoError(t, err)
+	assert.Regexp(t, "[A-Z0-9]+", g.ID)
+	assert.Equal(t, uint8(3), g.AttemptsLeft) 
+	assert.Equal(t, 0, len(g.Guesses))   
+	assert.Equal(t, "Playing", g.Status)                     
+                  
 }
