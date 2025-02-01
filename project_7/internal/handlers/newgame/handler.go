@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/oklog/ulid"
+	"github.com/oklog/ulid/v2"
 )
 
 const maxAttempts = 3
@@ -63,7 +63,6 @@ func createGame(db gameAdder) (session.Game, error) {
 		return session.Game{}, fmt.Errorf("unable to create a new game: %w", err)
 	}
 	g := session.Game{
-
 		ID:           session.GameID(ulid.Make().String()),
 		Gordle:       *game,
 		Guesses:      []session.Guess{},
