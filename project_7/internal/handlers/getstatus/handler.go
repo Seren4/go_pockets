@@ -6,6 +6,7 @@ import (
 	"learngo/httpgordle/internal/session"
 	"log"
 	"net/http"
+	"errors"
 )
 
 // The benefit of this method over http.Handle is that we don’t have to
@@ -36,14 +37,21 @@ func Handle(db gameFinder) http.HandlerFunc {
 		// 	http.Error(w, "failed to create a new game", http.StatusInternalServerError)
 		// 	return
 		// }
-		game := session.Game{
-			ID: session.GameID(id),
+		game, err := db.Find(session.GameID(id))            
+		if err != nil {
+			if errors.Is(err, session.ErrNotFound) {
+				http.Error(w, "this game does not exist", http.StatusNotFound)
+				return
+			}
+			log.Printf("cannot fetch game %s: %s", id, err)
+			http.Error(w, "failed to fetch game", http.StatusInternalServerError)
+			return
 		}
 
 		apiGame := api.ToGameResponse(game)
 		// Encode the game into JSON
-		err := json.NewEncoder(w).Encode(apiGame)
-		if err != nil {
+		error := json.NewEncoder(w).Encode(apiGame)
+		if error != nil {
 			// The header has already been set. Nothing much we can do here.
 			log.Printf("failed to write response: %s", err)
 		}

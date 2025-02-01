@@ -30,7 +30,7 @@ func TestHandleGet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, recorder.Code)
 
 	//assert.Equal(t,"application/json", recorder.Header().Get("Content-Type"))
-	assert.JSONEq(t, `{"id":"33","attempts_left":0,"guesses":[],"word_length":0,"status":""}`, recorder.Body.String())
+	assert.JSONEq(t, `{"id":"","attempts_left":0,"guesses":[],"word_length":0,"status":""}`, recorder.Body.String())
 }
 
 // Stubbing the repo
