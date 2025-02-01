@@ -1,6 +1,9 @@
 package session
 
-import "errors"
+import (
+	"errors"
+	"learngo/httpgordle/internal/gordle"
+)
 
 // Game contains the information about a game.
 type Game struct {
@@ -8,6 +11,7 @@ type Game struct {
 	AttemptsLeft byte
 	Guesses      []Guess
 	Status       string
+	Gordle       gordle.Game
 }
 
 // A GameID represents the ID of a game.
@@ -32,5 +36,3 @@ type Guess struct {
 var ErrGameOver = errors.New("game over")
 
 var ErrNotFound = errors.New("game not found")
-
-

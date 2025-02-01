@@ -2,11 +2,17 @@ package newgame
 
 import (
 	"encoding/json"
+	"fmt"
 	"learngo/httpgordle/internal/api"
+	"learngo/httpgordle/internal/gordle"
 	"learngo/httpgordle/internal/session"
 	"log"
 	"net/http"
+
+	"github.com/oklog/ulid"
 )
+
+const maxAttempts = 3
 
 // The benefit of this method over http.Handle is that we don’t have to
 // write a new http.Handler - we simply have to provide the handler itself,
@@ -25,7 +31,7 @@ type gameAdder interface {
 func Handle(db gameAdder) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
-		game, err := createGame()
+		game, err := createGame(db)
 		if err != nil {
 			log.Printf("unable to create a new game: %s", err)
 			http.Error(w, "failed to create a new game", http.StatusInternalServerError)
@@ -47,6 +53,26 @@ func Handle(db gameAdder) http.HandlerFunc {
 	}
 }
 
-func createGame() (session.Game, error) {
-	return session.Game{}, nil
+func createGame(db gameAdder) (session.Game, error) {
+	corpus, err := gordle.ReadCorpus()
+	if err != nil {
+		return session.Game{}, fmt.Errorf("unable to read corpus: %w", err)
+	}
+	game, err := gordle.New(corpus)
+	if err != nil {
+		return session.Game{}, fmt.Errorf("unable to create a new game: %w", err)
+	}
+	g := session.Game{
+
+		ID:           session.GameID(ulid.Make().String()),
+		Gordle:       *game,
+		Guesses:      []session.Guess{},
+		Status:       session.StatusPlaying,
+		AttemptsLeft: maxAttempts,
+	}
+	err = db.Add(g)
+	if err != nil {
+		return session.Game{}, fmt.Errorf("failed to save the new game")
+	}
+	return g, nil
 }
