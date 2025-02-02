@@ -17,15 +17,15 @@ func TestGameValidateGuest(t *testing.T) {
 		},
 		"too long": {
 			word:     "BONJOUR",
-			expected: errInvalidWordlLength,
+			expected: ErrInvalidWordlLength,
 		},
 		"too short": {
 			word:     "CIAO",
-			expected: errInvalidWordlLength,
+			expected: ErrInvalidWordlLength,
 		},
 		"empty": {
 			word:     "",
-			expected: errInvalidWordlLength,
+			expected: ErrInvalidWordlLength,
 		},
 	}
 	for name, tc := range tt {

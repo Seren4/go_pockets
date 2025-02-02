@@ -26,13 +26,13 @@ func New(corpus []string) (*Game, error) {
 	return g, nil
 }
 
-// errInvalidWordlLength
-var errInvalidWordlLength = gameError("invalid guess length, word doesn't have the same nb of chars as the solution")
+// ErrInvalidWordlLength
+var ErrInvalidWordlLength = gameError("invalid guess length, word doesn't have the same nb of chars as the solution")
 
 // validateGuess ensures the guess is valid enough.
 func (g *Game) validateGuess(guess string) error {
 	if len(guess) != len(g.solution) {
-		return fmt.Errorf("expected %d characters, got %d, %w", len(g.solution), len(guess), errInvalidWordlLength)
+		return fmt.Errorf("expected %d characters, got %d, %w", len(g.solution), len(guess), ErrInvalidWordlLength)
 
 	}
 	return nil
@@ -62,6 +62,15 @@ func (g *Game) ShowAnswer() string {
 	return string(g.solution)
 }
 
+func (fb Feedback)GameWon() bool {
+	for i := range fb {
+		if fb[i] != correctPosition {
+			return false
+		}
+	}
+	return true
+}
+
 // computeFeedback verifies every character of the guess against the solution
 func computeFeedback(guess, solution []rune) Feedback {
 	// initialize holders for marks
@@ -75,7 +84,7 @@ func computeFeedback(guess, solution []rune) Feedback {
 		return fb
 	}
 
-	// loop n. 1: check for chars in correct position
+
 	for index, letter := range guess {
 		if letter == solution[index] {
 			fb[index] = correctPosition
