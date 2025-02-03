@@ -30,13 +30,7 @@ func Handle(db gameFinder) http.HandlerFunc {
 		// log package is not thread- safe.
 		// So keep in mind that it can lead to unordered logs and complicate later testing.
 		log.Printf("retrieve status of the game with id: %v", id)
-
-		// game, err := retrieveGame(id)
-		// if err != nil {
-		// 	log.Printf("unable to create a new game: %s", err)
-		// 	http.Error(w, "failed to create a new game", http.StatusInternalServerError)
-		// 	return
-		// }
+		
 		game, err := db.Find(session.GameID(id))            
 		if err != nil {
 			if errors.Is(err, session.ErrNotFound) {
