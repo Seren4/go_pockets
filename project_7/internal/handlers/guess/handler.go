@@ -48,16 +48,18 @@ func Handle(db gameGuesser) http.HandlerFunc {
 			return
 		}
 		game, error := guess(session.GameID(id), r.Guess, db)
+		log.Printf("error on guess  %v", error)
+
 		if error != nil {
 			switch {
-				case errors.Is(err, session.ErrNotFound):
-					http.Error(w, err.Error(), http.StatusNotFound)
-				case errors.Is(err, gordle.ErrInvalidWordlLength):
-					http.Error(w, err.Error(), http.StatusBadRequest)
-				case errors.Is(err, session.ErrGameOver):
-					http.Error(w, err.Error(), http.StatusForbidden)
+				case errors.Is(error, session.ErrNotFound):
+					http.Error(w, error.Error(), http.StatusNotFound)
+				case errors.Is(error, gordle.ErrInvalidWordlLength):
+					http.Error(w, error.Error(), http.StatusBadRequest)
+				case errors.Is(error, session.ErrGameOver):
+					http.Error(w, error.Error(), http.StatusForbidden)
 				default:
-					http.Error(w, err.Error(), http.StatusInternalServerError)
+					http.Error(w, error.Error(), http.StatusInternalServerError)
 				}
 				return
 			}
